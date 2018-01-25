@@ -7,47 +7,49 @@ import csv
 client = config.client
 nivel = ["primaria"]
 subnivel = ["general"]
-csvfile = open('32_EDUCACIÓN PRIMARIA_15-01-2018.txt', 'rb',encoding="latin-1")
-table = csv.reader(csvfile, quotechar ='|')
-print table.next()
-exit()
+csvfile = open('32_EDUCACIÓN PRIMARIA_15-01-2018.txt', 'rb')
+table = csv.reader(csvfile, delimiter ='|')
+field_names = table.next()
+records = csv.DictReader(csvfile, fieldnames=field_names, delimiter ='|')
+#print field_names
 #print table.records[0]
-r = re.compile("V\d")
-fields = filter(r.match, table.field_names)
+r = re.compile("V\d|E\d")
+fields = filter(r.match, field_names)
 #print fields
-info_general = ['CLAVECCT', 'N_CLAVECCT', 'DIRSERVREG', 'UNIDADRESP', 'PROGRAMA', 'SUBPROG', 'RENGLON', 'N_RENGLON', 'PERIODO', 'MOTIVO', 'DISPON']
-turno = ['TURNO']
-ubicacion = ['N_ENTIDAD', 'MUNICIPIO', 'N_MUNICIPI', 'LOCALIDAD', 'N_LOCALIDA', 'DOMICILIO', 'ZONAESCOLA', 'SECTOR']
-sostenimiento = ['SOSTENIMIE']
-dependencia_normativa = ['DEPNORMTVA', 'DEPADMVA']
-servicio=['SERVICIO']
-renombres = {u'CLAVECCT':'clave', u'N_CLAVECCT':'nombre', u'TURNO':'turno', u'N_ENTIDAD':'nombre_entidad', u'MUNICIPIO':'municipio', 
-u'N_MUNICIPI':'nombre_municipio', u'LOCALIDAD':'localidad', u'N_LOCALIDA':'nombre_localidad', u'DOMICILIO':'domicilio', 
-u'DEPADMVA':'depadva', u'DEPNORMTVA':'dependencia_normativa', u'ZONAESCOLA':'zona_escolar', u'SECTOR':'sector', u'DIRSERVREG':'dirservreg', 
-u'SOSTENIMIE':'sostenimiento', u'SERVICIO':'servicio', u'UNIDADRESP':'unidadresp', u'PROGRAMA':'programa', u'SUBPROG':'subprog', u'RENGLON':'renglon',
- u'N_RENGLON':'nombre_renglon', u'PERIODO':'periodo', u'MOTIVO':'motivo', u'DISPON':'dispon'}
+#print field_names[3]
+#print table.next()[3]
+info_general = ['CV_CCT', 'NOMBRECT', 'TIPO', 'NIVEL', 'SUBNIVEL', 'CV_CARACTERIZAN1', 'C_CARACTERIZAN1', 'CV_CARACTERIZAN2','C_CARACTERIZAN2', 'PERIODO', 'ZONA', 'JEFSEC', 'SERVREG']
+turno = ['TURNO','CV_TURNO']
+ubicacion = ['C_NOM_ENT', 'CV_MUN', 'C_NOM_MUN', 'CV_LOC', 'C_NOM_LOC', 'C_NOM_VIALIDAD', 'N_EXTNUM']
+control=['CONTROL', 'SUBCONTROL']
+relacion_911=['CV_ESTATUS_CAPTURA', 'FECHA_ENTREGA']
+renombres = {u'CV_CCT':'clave', u'NOMBRECT':'nombre', u'TIPO':'tipo', u'NIVEL':'nivel', u'SUBNIVEL':'subnivel', u'CV_CARACTERIZAN1':'cv_caracterizan1',
+u'C_CARACTERIZAN1':'c_caracterizan1', u'CV_CARACTERIZAN2':'cv_caracterizan2', u'C_CARACTERIZAN2':'c_caracterizan2',  u'JEFSEC':'jefsec', 
+u'CV_MUN':'municipio', u'TURNO':'turno', u'CV_TURNO':'cv_turno', u'C_NOM_ENT':'entidad',u'C_NOM_VIALIDAD':'vialidad',u'N_EXTNUM':'num_exterior',
+u'C_NOM_MUN':'nombre_municipio', u'CV_LOC':'localidad', u'C_NOM_LOC':'nombre_localidad',
+u'CONTROL':'control', u'SUBCONTROL':'subcontrol', u'ZONA':'zona', u'SERVREG':'servreg', 
+u'CV_ESTATUS_CAPTURA':'estatus_captura', u'FECHA_ENTREGA':'fecha', u'PROGRAMA':'programa', u'SUBPROG':'subprog', u'RENGLON':'renglon',
+u'PERIODO':'periodo', u'MOTIVO':'motivo'}
 #print len(table.field_names)
-total_f = info_general+turno+ubicacion+sostenimiento+dependencia_normativa+servicio+fields
-#print len(total_f)
-print (set(total_f) - set(table.field_names))
-records = table.records
+total_f = info_general+turno+ubicacion+control+relacion_911+fields
+print len(total_f)
+print (set(total_f) - set(fields))
+#records = table.records
 #records = table.records[1:3]
-print len(table.records)
-#exit(0)
+#print len(table.records)
+#print records.fieldnames
 for record in records:
 	q='CREATE VERTEX Plantel CONTENT {'
-	q=q+'"nivel":'+str(nivel)+','
-	q=q+'"subnivel":'+str(subnivel)+','
 	#Informacion general
 	for field in info_general:
 		value = record[field]
-		if type(value) == unicode:
+		if type(value) == unicode or type(value) == str:
 			value = value.replace('"', '\\"')
 		q=q+'"%s":"%s",'%(renombres[field], value)
 	q=q+'ubicacion:{'
 	for field in ubicacion:
 		value = record[field]
-                if type(value) == unicode:
+                if type(value) == unicode or type(value) == str:
                         value = value.replace('"', '\\"')
 		q=q+'"%s":"%s",'%(renombres[field], value)
 	q=q[:-1]
@@ -55,31 +57,15 @@ for record in records:
 	q=q+'turno:{'
 	for field in turno:
                 value = record[field]
-                if type(value) == unicode:
+                if type(value) == unicode or type(value) == str:
                         value = value.replace('"', '\\"')
                 q=q+'"%s":"%s",'%(renombres[field], value)
         q=q[:-1]
 	q=q+'},'
-	q=q+'sostenimiento:{'
-        for field in sostenimiento:
+	q=q+'control:{'
+        for field in control:
                 value = record[field]
-                if type(value) == unicode:
-                        value = value.replace('"', '\\"')
-                q=q+'"%s":"%s",'%(renombres[field], value)
-        q=q[:-1]
-        q=q+'},'
-	q=q+'dependencia_normativa:{'
-        for field in dependencia_normativa:
-                value = record[field]
-                if type(value) == unicode:
-                        value = value.replace('"', '\\"')
-                q=q+'"%s":"%s",'%(renombres[field], value)
-        q=q[:-1]
-        q=q+'},'
-	q=q+'servicio:{'
-        for field in servicio:
-                value = record[field]
-                if type(value) == unicode:
+                if type(value) == unicode or type(value) == str:
                         value = value.replace('"', '\\"')
                 q=q+'"%s":"%s",'%(renombres[field], value)
         q=q[:-1]
@@ -92,7 +78,10 @@ for record in records:
 		value = record[field]
 		#print value
 		#print type(value)
-                if type(value) == unicode:
+                if type(value) == str:
+                        value = value.replace('"', '\\"')
+                        q=q+'"%s":"%s",'%(field, value)
+		elif type(value) == unicode:
                         value = value.replace('"', '\\"')
                 	q=q+'"%s":"%s",'%(field, value)
 		elif type(value) == datetime.date:
