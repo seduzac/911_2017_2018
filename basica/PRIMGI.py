@@ -79,8 +79,12 @@ for record in records:
 		#print value
 		#print type(value)
                 if type(value) == str:
-                        value = value.replace('"', '\\"')
-                        q=q+'"%s":"%s",'%(field, value)
+			try:
+				value = int(value)
+				q=q+'"%s":%i,'%(field, value)
+			except:
+                        	value = value.replace('"', '\\"')
+                        	q=q+'"%s":"%s",'%(field, value)
 		elif type(value) == unicode:
                         value = value.replace('"', '\\"')
                 	q=q+'"%s":"%s",'%(field, value)
