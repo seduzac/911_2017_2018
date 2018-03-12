@@ -7,7 +7,7 @@ import csv
 client = config.client
 nivel = ["secundaria"]
 subnivel = ["general"]
-csvfile = open('32_EDUCACIÓN SECUNDARIA_15-01-2018.txt', 'rb')
+csvfile = open('32_EDUCACIÓN SECUNDARIA_06-03-2018.txt', 'rb')
 table = csv.reader(csvfile, delimiter ='|')
 field_names = table.next()
 records = csv.DictReader(csvfile, fieldnames=field_names, delimiter ='|')
@@ -20,7 +20,7 @@ fields = filter(r.match, field_names)
 #print table.next()[3]
 info_general = ['CV_CCT', 'NOMBRECT', 'TIPO', 'NIVEL', 'SUBNIVEL', 'CV_CARACTERIZAN1', 'C_CARACTERIZAN1', 'CV_CARACTERIZAN2','C_CARACTERIZAN2', 'PERIODO', 'ZONA', 'JEFSEC', 'SERVREG']
 turno = ['TURNO','CV_TURNO']
-ubicacion = ['C_NOM_ENT', 'CV_MUN', 'C_NOM_MUN', 'CV_LOC', 'C_NOM_LOC', 'C_NOM_VIALIDAD', 'N_EXTNUM']
+ubicacion = ['CV_MUN', 'C_NOM_MUN', 'CV_LOC', 'C_NOM_LOC', 'C_NOM_VIALIDAD', 'N_EXTNUM']
 control=['CONTROL', 'SUBCONTROL']
 relacion_911=['CV_ESTATUS_CAPTURA', 'FECHA_ENTREGA']
 renombres = {u'CV_CCT':'clave', u'NOMBRECT':'nombre', u'TIPO':'tipo', u'NIVEL':'nivel', u'SUBNIVEL':'subnivel', u'CV_CARACTERIZAN1':'cv_caracterizan1',
