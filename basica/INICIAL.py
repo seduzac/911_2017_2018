@@ -106,6 +106,10 @@ for record in records:
 	#print q
 	rid_911 = client.command(q)[0]._rid
 	if rid_911:
-                q= 'CREATE EDGE Resultado FROM %s TO %s'%(rid_plantel, rid_911)
+                q= 'CREATE EDGE Resultado FROM %s TO %s SET '%(rid_plantel, rid_911)
+                for field in relacion_911:
+                        value = record[field]
+                        value = value.replace('"', '\\"')
+                        q=q+'%s = "%s",'%(field, value)
+                q=q[:-1]
                 client.command(q)
-

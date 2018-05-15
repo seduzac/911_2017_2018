@@ -7,11 +7,12 @@ import csv
 client = config.client
 nivel = ["primaria"]
 subnivel = ["general"]
-csvfile = open('32_EDUCACIÓN PRIMARIA_06-03-2018.txt', 'rb')
+csvfile = open('32_EDUCACIÓN PRIMARIA_12-03-2018.txt', 'rb')
 table = csv.reader(csvfile, delimiter ='|')
 field_names = table.next()
 records = csv.DictReader(csvfile, fieldnames=field_names, delimiter ='|')
 print field_names
+#exit(0)
 #print table.records[0]
 r = re.compile("V\d|E\d")
 fields = filter(r.match, field_names)
@@ -107,6 +108,11 @@ for record in records:
 	#print q
 	rid_911 = client.command(q)[0]._rid
 	if rid_911:
-                q= 'CREATE EDGE Resultado FROM %s TO %s'%(rid_plantel, rid_911)
-                client.command(q)
+                q= 'CREATE EDGE Resultado FROM %s TO %s SET '%(rid_plantel, rid_911)
+                for field in relacion_911:
+			value = record[field]
+			value = value.replace('"', '\\"')
+                        q=q+'%s = "%s",'%(field, value)
+		q=q[:-1]
+		client.command(q)
 
