@@ -18,17 +18,17 @@ fields = filter(r.match, field_names)
 #print fields
 #print field_names[3]
 #print table.next()[3]
-info_general = ['CV_CCT', 'NOMBRECT', 'TIPO', 'NIVEL', 'SUBNIVEL', 'CV_CARACTERIZAN1', 'C_CARACTERIZAN1', 'CV_CARACTERIZAN2','C_CARACTERIZAN2', 'PERIODO', 'ZONA', 'JEFSEC', 'SERVREG']
+info_general = ['CV_CCT', 'NOMBRECT', 'TIPO', 'NIVEL', 'SUBNIVEL', 'CV_CARACTERIZAN1', 'C_CARACTERIZAN1', 'CV_CARACTERIZAN2','C_CARACTERIZAN2', 'PERIODO', 'ZONA', 'JEFSEC', 'CV_ESTATUS_CAPTURA', 'SERVREG']
 turno = ['TURNO','CV_TURNO']
 ubicacion = ['CV_MUN', 'C_NOM_MUN', 'CV_LOC', 'C_NOM_LOC', 'C_NOM_VIALIDAD', 'N_EXTNUM']
 control=['CONTROL', 'SUBCONTROL']
-relacion_911=['CV_ESTATUS_CAPTURA', 'FECHA_ENTREGA']
+relacion_911=['FECHA_ENTREGA']
 renombres = {u'CV_CCT':'clave', u'NOMBRECT':'nombre', u'TIPO':'tipo', u'NIVEL':'nivel', u'SUBNIVEL':'subnivel', u'CV_CARACTERIZAN1':'cv_caracterizan1',
 u'C_CARACTERIZAN1':'c_caracterizan1', u'CV_CARACTERIZAN2':'cv_caracterizan2', u'C_CARACTERIZAN2':'c_caracterizan2',  u'JEFSEC':'jefsec', 
 u'CV_MUN':'municipio', u'TURNO':'turno', u'CV_TURNO':'cv_turno', u'C_NOM_ENT':'entidad',u'C_NOM_VIALIDAD':'vialidad',u'N_EXTNUM':'num_exterior',
 u'C_NOM_MUN':'nombre_municipio', u'CV_LOC':'localidad', u'C_NOM_LOC':'nombre_localidad',
 u'CONTROL':'control', u'SUBCONTROL':'subcontrol', u'ZONA':'zona', u'SERVREG':'servreg', 
-u'CV_ESTATUS_CAPTURA':'estatus_captura', u'FECHA_ENTREGA':'fecha', u'PROGRAMA':'programa', u'SUBPROG':'subprog', u'RENGLON':'renglon',
+u'CV_ESTATUS_CAPTURA':'estatus', u'FECHA_ENTREGA':'fecha', u'PROGRAMA':'programa', u'SUBPROG':'subprog', u'RENGLON':'renglon',
 u'PERIODO':'periodo', u'MOTIVO':'motivo'}
 #print len(table.field_names)
 total_f = info_general+turno+ubicacion+control+relacion_911+fields
@@ -39,7 +39,7 @@ print (set(total_f) - set(fields))
 #print len(table.records)
 #print records.fieldnames
 for record in records:
-	q='CREATE VERTEX Plantel CONTENT {'
+	q='CREATE VERTEX Escuela CONTENT {'
 	#Informacion general
 	for field in info_general:
 		value = record[field]

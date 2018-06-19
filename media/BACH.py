@@ -5,39 +5,43 @@ import config
 import csv
 
 client = config.client
-nivel = ["inicial"]
+nivel = ["media"]
 subnivel = ["general"]
-csvfile = open('32_EDUCACIÓN INICIAL_09-02-2018.txt', 'rb')
+csvfile = open('BACH GEN F9117G-32.txt', 'rb')
 table = csv.reader(csvfile, delimiter ='|')
 field_names = table.next()
 records = csv.DictReader(csvfile, fieldnames=field_names, delimiter ='|')
-print field_names
+#print field_names
 #print table.records[0]
-r = re.compile("V\d|E\d")
+r = re.compile("MS\d|E\d")
 fields = filter(r.match, field_names)
-#print fields
+print fields
 #print field_names[3]
 #print table.next()[3]
-info_general = ['CV_CCT', 'NOMBRECT', 'TIPO', 'NIVEL', 'SUBNIVEL', 'CV_CARACTERIZAN1', 'C_CARACTERIZAN1', 'CV_CARACTERIZAN2','C_CARACTERIZAN2', 'PERIODO', 'ZONA', 'JEFSEC', 'CV_ESTATUS_CAPTURA', 'SERVREG']
-turno = ['TURNO','CV_TURNO']
-ubicacion = ['CV_MUN', 'C_NOM_MUN', 'CV_LOC', 'C_NOM_LOC', 'C_NOM_VIALIDAD', 'N_EXTNUM']
-control=['CONTROL', 'SUBCONTROL']
-relacion_911=['FECHA_ENTREGA']
-renombres = {u'CV_CCT':'clave', u'NOMBRECT':'nombre', u'TIPO':'tipo', u'NIVEL':'nivel', u'SUBNIVEL':'subnivel', u'CV_CARACTERIZAN1':'cv_caracterizan1',
-u'C_CARACTERIZAN1':'c_caracterizan1', u'CV_CARACTERIZAN2':'cv_caracterizan2', u'C_CARACTERIZAN2':'c_caracterizan2',  u'JEFSEC':'jefsec', 
-u'CV_MUN':'municipio', u'TURNO':'turno', u'CV_TURNO':'cv_turno', u'C_NOM_ENT':'entidad',u'C_NOM_VIALIDAD':'vialidad',u'N_EXTNUM':'num_exterior',
-u'C_NOM_MUN':'nombre_municipio', u'CV_LOC':'localidad', u'C_NOM_LOC':'nombre_localidad',
-u'CONTROL':'control', u'SUBCONTROL':'subcontrol', u'ZONA':'zona', u'SERVREG':'servreg', 
-u'CV_ESTATUS_CAPTURA':'estatus', u'FECHA_ENTREGA':'fecha', u'PROGRAMA':'programa', u'SUBPROG':'subprog', u'RENGLON':'renglon',
-u'PERIODO':'periodo', u'MOTIVO':'motivo'}
+info_general = ['clave_plantel', 'clavecct', 'plantel', 'nivel', 'subnivel', 'nomcentro', 'nomdirector', 'appdirector', 'apmdirector', 'cvedepnorm', 'cvesos', 'sostenimiento', 'cveser', 'servicio', 'cvedepnorm', 'dependencia_normativa', 'modalidad', 'opcion_educativa', 'duracion', 'status_bachillerato', 'captura']
+turno = ['turno','n_turno']
+grupo = ['grupo1', 'grupo2', 'grupo3', 'grupo4', 'grupo5']
+ubicacion = ['entidad', 'nomentidad', 'municipio', 'nommunicipio', 'localidad', 'nomlocalidad']
+control=['control', 'subcontrol']
+relacion_911=['OBSERVACIONES', 'RESPONSABLE_LLENADO', 'FECHA_LLENADO']
+renombres = {u'clavecct':'clave',u'clave_plantel':'clave_plantel', u'nomcentro':'nombre', u'nomdirector':'nombre_director', u'nivel':'nivel', u'subnivel':'subnivel', 
+u'cvedepnorm':'clave_dependencia_normativa', u'appdirector':'apellido_paterno_director',u'apmdirector':'apellido_materno_director',
+u'dependencia_normativa':'dependencia_normativa', u'sostenimiento':'sostenimiento', u'cvesos':'clave_sostenimiento',  u'servicio':'servicio', 
+u'municipio':'municipio', u'turno':'turno', u'n_turno':'nombre_turno', u'nomentidad':'nombre_entidad',u'C_NOM_VIALIDAD':'vialidad',u'N_EXTNUM':'num_exterior',
+u'nommunicipio':'nombre_municipio', u'localidad':'localidad', u'nomlocalidad':'nombre_localidad',u'entidad':'entidad',
+u'control':'control', u'subcontrol':'subcontrol', u'duracion':'duracion', u'cveser':'clave_servicio',u'status_bachillerato':'estatus', 
+u'captura':'captura', u'FECHA_LLENADO':'fecha', u'opcion_educativa':'opcion_educativa', u'modalidad':'modalidad', u'RENGLON':'renglon',
+u'plantel':'nombre_plantel', u'MOTIVO':'motivo', u'grupo1':'1', u'grupo2':'2', u'grupo3':'3', u'grupo4':'4', u'grupo5':'5',
+u'OBSERVACIONES':'observaciones', u'RESPONSABLE_LLENADO':'responsable' }
 #print len(table.field_names)
 total_f = info_general+turno+ubicacion+control+relacion_911+fields
-print len(total_f)
-print (set(total_f) - set(fields))
+#print len(total_f)
+#print (set(total_f) - set(fields))
 #records = table.records
 #records = table.records[1:3]
 #print len(table.records)
 #print records.fieldnames
+#exit(0)
 for record in records:
 	q='CREATE VERTEX Escuela CONTENT {'
 	#Informacion general
@@ -62,6 +66,14 @@ for record in records:
                 q=q+'"%s":"%s",'%(renombres[field], value)
         q=q[:-1]
 	q=q+'},'
+	q=q+'grupo:{'
+        for field in turno:
+                value = record[field]
+                if type(value) == unicode or type(value) == str:
+                        value = value.replace('"', '\\"')
+                q=q+'"%s":"%s",'%(renombres[field], value)
+        q=q[:-1]
+        q=q+'},'
 	q=q+'control:{'
         for field in control:
                 value = record[field]
@@ -106,10 +118,6 @@ for record in records:
 	#print q
 	rid_911 = client.command(q)[0]._rid
 	if rid_911:
-                q= 'CREATE EDGE Resultado FROM %s TO %s SET '%(rid_plantel, rid_911)
-                for field in relacion_911:
-                        value = record[field]
-                        value = value.replace('"', '\\"')
-                        q=q+'%s = "%s",'%(field, value)
-                q=q[:-1]
+                q= 'CREATE EDGE Resultado FROM %s TO %s'%(rid_plantel, rid_911)
                 client.command(q)
+
