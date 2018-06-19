@@ -114,7 +114,7 @@ for record in table.records:
         q=q+'}'
 	q=q+'}'
 	rid_institucion = client.command(q)[0]._rid
-	q='CREATE VERTEX Resultados911 CONTENT {'
+	q='CREATE VERTEX 911 CONTENT {'
 	for field in fields:
 		value = record[field]
                 if type(value) == unicode:

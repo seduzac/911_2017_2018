@@ -85,7 +85,7 @@ for record in records:
 	q=q+'}'
 	rid_plantel = client.command(q)[0]._rid
 	#print q
-	q='CREATE VERTEX Resultados911 CONTENT {'
+	q='CREATE VERTEX 911 CONTENT {'
 	for field in fields:
 		value = record[field]
 		#print value
